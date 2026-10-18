@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AV-Sync">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>AV-Sync Testsignal</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="stage" aria-label="Testsignal">
+  <div id="flash"></div>
+  <section id="band">
+    <div id="clock" aria-live="off">--:--:--<span class="ms">.---</span></div>
+    <div id="meta">
+      <span id="chip-sync" class="chip">Zeit: –</span>
+      <span id="chip-event" class="chip">–</span>
+      <span id="chip-obs" class="chip hidden">OBS: –</span>
+    </div>
+  </section>
+</main>
+
+<div id="overlay">
+  <div class="panel">
+    <header>
+      <img src="icon.svg" alt="" width="44" height="44">
+      <div>
+        <h1>AV-Sync Testsignal</h1>
+        <p class="sub">Blitz + Ton zu jeder vollen Sekunde echter UTC-Zeit</p>
+      </div>
+    </header>
+
+    <div id="sync-box" class="box">
+      <div class="row"><span>Zeitquelle</span><strong id="sync-source">–</strong></div>
+      <div class="row"><span>Genauigkeit</span><strong id="sync-acc">synchronisiere …</strong></div>
+      <div class="row"><span>Handy-Uhr</span><strong id="sync-dev">–</strong></div>
+      <div class="row"><span>Bildschirm</span><strong id="disp-rate">–</strong></div>
+    </div>
+
+    <button id="start" class="primary" disabled>Starten</button>
+    <p class="hint">Handy-Bildschirm in die Kamera halten, Lautsprecher zum Mikrofon.
+      Stummschalter aus, Helligkeit hoch. Tippen auf den Bildschirm öffnet wieder dieses Menü.</p>
+
+    <details id="guide">
+      <summary>Anleitung</summary>
+      <ol class="guide">
+        <li>In OBS an die Kamera den Filter <b>„AV-Sync Video-Sensor“</b> und an das Mikrofon den
+          Filter <b>„AV-Sync Audio-Sensor“</b> hängen. Ergebnisse zeigt das Dock <b>„AV-Sync“</b> (Menü Docks).</li>
+        <li><b>Starten</b> tippen und das Handy-Display möglichst groß und scharf in die Kamera halten,
+          den Lautsprecher Richtung Mikrofon.</li>
+        <li>Jede volle Sekunde (echte UTC-Zeit) kommen Blitz und Ton, jede 10. Sekunde ein längerer Marker.
+          OBS misst, wie spät beides ankommt, und zeigt den A/V-Versatz.</li>
+      </ol>
+      <p class="hint">Tipps: Stummschalter aus, Lautstärke hoch, Auto-Sperre aus. Rauschunterdrückung am
+        Mikrofon während der Messung abschalten. Liegt die Seite auf dem OBS-PC im WLAN (Adresse im Dock),
+        ist die Uhr am genauesten.</p>
+    </details>
+
+    <details id="settings">
+      <summary>Einstellungen &amp; Kalibrierung</summary>
+      <label class="field">Lautstärke <output id="vol-out">80 %</output>
+        <input id="volume" type="range" min="0" max="1" step="0.05" value="0.8"></label>
+      <label class="field">Zeitquelle
+        <select id="source">
+          <option value="auto">Automatisch</option>
+          <option value="obs">OBS-Plugin (WLAN)</option>
+          <option value="akamai">time.akamai.com</option>
+          <option value="timeapi">timeapi.io</option>
+          <option value="device">Uhr des Handys (ungenau)</option>
+        </select></label>
+      <label class="field">Display-Verzögerung
+        <select id="frames">
+          <option value="auto">Automatisch</option>
+          <option value="0">0 Bilder</option>
+          <option value="1">1 Bild</option>
+          <option value="2">2 Bilder</option>
+          <option value="3">3 Bilder</option>
+          <option value="4">4 Bilder</option>
+        </select></label>
+      <label class="field">Video-Korrektur (ms)
+        <input id="cal-video" type="number" step="0.5" value="0" inputmode="decimal"></label>
+      <label class="field">Audio-Korrektur (ms)
+        <input id="cal-audio" type="number" step="0.5" value="0" inputmode="decimal"></label>
+      <label class="field">Gerätename
+        <input id="dev-name" type="text" maxlength="40" placeholder="z. B. iPhone Kamera 1"></label>
+      <p class="hint">Korrekturen gleichen die feste Eigenverzögerung dieses Handys aus
+        (positiv = Bild bzw. Ton kommt später als berechnet). Werte werden lokal gespeichert.</p>
+    </details>
+    <p class="foot"><span id="version"></span> · <a href="https://github.com/testbild-media/obs-avsync#readme" target="_blank" rel="noopener">OBS-Plugin &amp; Anleitung</a></p>
+  </div>
+</div>
+
+<video id="nosleep" playsinline muted loop aria-hidden="true"></video>
+<script src="app.js"></script>
+</body>
+</html>
