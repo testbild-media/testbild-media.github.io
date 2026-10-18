@@ -379,7 +379,8 @@
   }
 
   async function detectObs() {
-    if (location.protocol === 'file:') return false;
+    // the plugin serves the page via plain http in the LAN; https (GitHub Pages) never is the plugin
+    if (location.protocol !== 'http:') return false;
     try {
       const r = await fetch('avsync-server.json', { cache: 'no-store' });
       if (!r.ok) return false;
